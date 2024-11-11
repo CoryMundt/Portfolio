@@ -1,7 +1,7 @@
 # python-portfolio
 GitHub Portfolio for Recruiters
 
-Description: The project the code was taken from is a personal project of mine. I have always wanted to create a complex trading bot built on statistical analysis. The sample code is taken from an early version of said project. It basically just gets data from the coinbase api and builds a database from it. It is not the final version because everyone wants an advantage in trading, so I don't want the final version public. Basically the only difference though is that this updates itself regularly wihtout user input and it accounts for rows of data that are empty.
+Description: The project the code was taken from is a personal project of mine. I have always wanted to create a complex trading bot built on statistical analysis. The sample code is taken from an early version of said project. It basically just gets data from the coinbase api and builds a database from it. It is not the final version because everyone wants an advantage in trading, so I don't want the final version public. Basically the only difference though is that this updates itself regularly wihtout user input and it accounts for rows of data that are empty. (I also want to add I picked coinbase because I am subject to insider trading laws currently so to trade I'm left with crypto)
 
 Technology: Python, JSON, and SQL (sqlite)
 
