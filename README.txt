@@ -11,4 +11,5 @@ Setup: First you will need to downlaod python if it is not already installed, ma
 Set it up like this:
 api_key = "the other key here"
 api_secret = ""-----BEGIN EC PRIVATE KEY----....."
+(the video shows this too)
 Then just run main.py either in terminal or an IDE. 
