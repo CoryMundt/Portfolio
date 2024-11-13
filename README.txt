@@ -1,4 +1,4 @@
-# python-portfolio
+# portfolio
 GitHub Portfolio for Recruiters
 
 (Project 1)
