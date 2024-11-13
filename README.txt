@@ -1,4 +1,4 @@
-# portfolio
+# Portfolio
 GitHub Portfolio for Recruiters
 
 (Project 1)
