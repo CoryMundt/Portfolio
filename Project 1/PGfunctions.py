@@ -30,7 +30,7 @@ def writeData():
 def readConfig():
     global config
     try:
-        # will only fail first run when json file is empty
+        ### will only fail first run when json file is empty
         with open('config.json', 'r') as file:
             config = json.load(file)
         return config
@@ -63,7 +63,7 @@ def getmidnight():
 def getnumbers(userinput):
     return re.sub("[^0-9^.]", "", userinput)
 
-# gets rid of 0 when inputting date like 05 for may or day 5 of whatever month
+### gets rid of 0 when inputting date like 05 for may or day 5 of whatever month
 def checkfrontzero(timevar):
     if timevar.startswith("0"):
         timevar = int(timevar[1])
@@ -109,7 +109,7 @@ def getdatetimerange(acronym):
             if noneentered is True:
                 noneentered = False
                 break
-            # Get Start time
+            ### Get Start time
             try:
                 Sinputtime = input("Enter starting time as HH:MM (In 24hr format), if no time is entered, the starting time will default to midnight:")
                 if len(Sinputtime) < 1:
@@ -133,7 +133,7 @@ def getdatetimerange(acronym):
 
         while True:
             try:
-                #Get End Date
+                ###Get End Date
                 Einputdate = input("Enter End date as MM-DD-YYYY, or press Enter to default to current date and time: ")
                 if len(Einputdate) < 1:
                     Edatetime = datetime.now()
@@ -185,7 +185,7 @@ def getdatetimerange(acronym):
 
 ### this function gets the start date for the data tables from the user when creating a new crypto in the Data base as all
 def getStartTime():
-    #get unix timestamp of now
+    ### get unix timestamp of now
     Ctime = int(time.mktime(datetime.now().timetuple()))
     ### 189345600 is 6 years worth of seconds
     zerodate = Ctime - 157680000
@@ -332,7 +332,7 @@ def from_dict(self):
         name = self["name"]
     )
 
-# google variable names for functions in this case
+
 def createDefaultCandleTables(acronym, cursor):
     tables = ["15min", "30min", "1hour", "6hour", "12hour", "1day", "7day", "14day", "30day", "60day", "90day"]
     newTables = dict()
