@@ -19,8 +19,14 @@ while True:
             quit()
         else:
             break
+### Creates a connection to the database and then a cursor with which we can run sql to modify the database
+### If the database does not exist yet, it creates an empty one
 conn = sqlite3.connect('MarketData.sqlite')
 cur = conn.cursor()
+
+### This is fetching api keys from the .env file. Currently read-only keys for one of my accounts.
+### Each instance of the program, if this program was to actually be used by other people, would have unique api
+### keys, and we obviously we don't want those api keys within the code itself
 
 dotenv_path = find_dotenv()
 load_dotenv(dotenv_path)
@@ -37,17 +43,17 @@ while True:
         if run.upper() not in ('Y', 'N'):
             continue
         else:
-            if run == "N":
+            if run.upper() == "N":
                 break
     while True:
-        acronym = input('Enter 3 letter Crypto acronym: ')
+        acronym = input('Enter 3 letter Crypto acronym or leave empty and press enter to quit: ')
         acronym = acronym.upper()
         if len(acronym) < 1:
-            # for user to quit application
             quit()
         if len(acronym) != 3:
-            "Error: Invalid Acronym"
+            print("Error: Invalid Acronym")
             continue
+        ### Checks whether entered crypro acronym already exists in the database to avoid duplicates
         if acronym not in data:
             new_crypto = {
                 "gotData": False,
@@ -58,12 +64,13 @@ while True:
         else:
             print("Error: Crypto already Exists")
             continue
-        # end: gets the date time of now converts that to unix timestamp, subtracts a day worth of seconds to get start timestamp
+        ### Gets the datetime of now and converts that to a unix timestamp, then subtracts a day's worth of seconds
+        ### to get start unix timestamp for the test below
         end = str(int(time.mktime(datetime.now().timetuple())))
         start = str(int(end) - 90000)
         try:
             ### get_candles(client, crypto_market, str(int(unixtimestamp)), str(int(unixtimestamp)), per candle time period)
-            ### #here I am just checking if the inputs are valid, before adding anything to the data base with a small query to the api
+            ### Checks whether the inputs are valid, before adding anything to the data base by issuing a small query to the api
             MarketData = coinbase.rest.RESTClient.get_candles(client, acronym + "-USD", start, end, "ONE_DAY")
             writeData()
             firstLoop = False
