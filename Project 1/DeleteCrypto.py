@@ -1,6 +1,5 @@
-import sqlite3
 from PGfunctions import readData, from_dict, writeData
-### this file is to delete all tables associated with a specified asset
+### This file is to delete all tables associated with a specified asset instead of manually deleting each one
 while True:
     run = input("Would you like to delete a crypto Y/N: ")
     if run.upper() not in ('Y', 'N'):
@@ -15,6 +14,7 @@ cur = conn.cursor()
 data = readData()
 def deleteCrypto():
     while True:
+        ### Ensures user inputs an asset that exists within the database
         acronym = input("Enter 3 letter acronym for the crypto to delete: ")
         acronym = acronym.upper()
         if len(acronym) < 1:
