@@ -7,7 +7,7 @@ while True:
     if config['runs'] == -1:
         backupRun = input("How many times after updating should we create a back up for the database? Press Enter to default to 50: ")
         try:
-            ### if user doesn't enter a number, e.g. pressing enter, the backupRun defaults to 50 and intial backup files
+            ### If user doesn't enter a number, e.g. pressing enter, the backupRun defaults to 50 and intial backup files
             ### are created by copying the main files
             if len(backupRun) < 1:
                 backupRun = 50
