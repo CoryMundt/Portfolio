@@ -16,7 +16,7 @@ while True:
                 shutil.copy('config.json', 'configBackup.json')
             backupRun = int(backupRun)
             config['backupRun'] = backupRun
-            # in case a user enters 0
+            # In case a user enters 0
             if backupRun < 1:
                 print("You must create a backup database in case something unexpected happens")
                 continue
