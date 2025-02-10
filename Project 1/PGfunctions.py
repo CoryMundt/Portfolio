@@ -5,13 +5,14 @@ from MarketDataTables import MarketDataTable
 import time
 import re
 from datetime import datetime
-import pytz
+#import pytz
 
-
+### Reads the Sdata.json file which is a dictionary of all the cryptos and their respective tables
 def readData():
     global data
     try:
-        #will only fail first run when json file is empty
+        ### This will only fail if json file does not exist or has been removed from the directory by the user
+        ### in which case it creates a new blank one
         with open('Sdata.json', 'r') as file:
             data = json.load(file)
         return data
@@ -21,16 +22,17 @@ def readData():
         with open('Sdata.json', 'r') as file:
             data = json.load(file)
         return data
+### Updates Sdata.json
 def writeData():
     global data
     with open('Sdata.json', 'w') as file:
         json.dump(data, file, indent=4)
 
-
+### This function reads the config.json file which keeps track of user's instance of the program between uses
 def readConfig():
     global config
     try:
-        ### will only fail first run when json file is empty
+        ### Will only fail first run when json file is empty
         with open('config.json', 'r') as file:
             config = json.load(file)
         return config
@@ -41,38 +43,40 @@ def readConfig():
             config = json.load(file)
     return config
 
+### Updates Config.json file
 def writeConfig():
     global config
     with open('config.json', 'w') as file:
         json.dump(config, file, indent=4)
-### ignore not used in portfolio code
-def get30past():
+
+'''def get30past():
     dtime = datetime.now()
     Unix_TDPtime = time.mktime(dtime.timetuple()) - 2592000
     TDPtime = datetime.fromtimestamp(Unix_TDPtime)
     print("Date and Time Defaulted to : " + str(TDPtime))
-    return TDPtime
-### ignore not used in portfolio code
-def getmidnight():
+    return TDPtime'''
+
+'''def getmidnight():
     dnow = datetime.now()
     dtime = datetime(dnow.year, dnow.month, dnow.day, 0,0,0)
     Unix_TDPtime = time.mktime(dtime.timetuple())
     TDPtime = datetime.fromtimestamp(Unix_TDPtime)
     print("Date and Time Defaulted to : " + str(TDPtime))
-    return TDPtime
+    return TDPtime'''
+
+### Used to get rid of // ,, ... in dates entered by user
 def getnumbers(userinput):
     return re.sub("[^0-9^.]", "", userinput)
 
-### gets rid of 0 when inputting date like 05 for may or day 5 of whatever month
+### Gets rid of leading 0 when inputting dates
 def checkfrontzero(timevar):
     if timevar.startswith("0"):
         timevar = int(timevar[1])
     else:
         timevar = int(timevar)
     return timevar
-### ignore not used in portfolio code
-def getdatetimerange(acronym):
-    #note to self to update zero date to fetch first row of acronym 15 min canlde table, get unix, and convert that to datetime object to get zero date
+### Ignore
+'''def getdatetimerange(acronym):
     zerodate = datetime(2009, 1, 3)
     noneentered = False
     while True:
@@ -109,7 +113,7 @@ def getdatetimerange(acronym):
             if noneentered is True:
                 noneentered = False
                 break
-            ### Get Start time
+            # Get Start time
             try:
                 Sinputtime = input("Enter starting time as HH:MM (In 24hr format), if no time is entered, the starting time will default to midnight:")
                 if len(Sinputtime) < 1:
@@ -133,7 +137,7 @@ def getdatetimerange(acronym):
 
         while True:
             try:
-                ###Get End Date
+                #Get End Date
                 Einputdate = input("Enter End date as MM-DD-YYYY, or press Enter to default to current date and time: ")
                 if len(Einputdate) < 1:
                     Edatetime = datetime.now()
@@ -181,18 +185,19 @@ def getdatetimerange(acronym):
                 continue
         break
     print("Starting Date and Time: " + str(Sdatetime) + " Ending Date and Time: " + str(Edatetime))
-    return (int(Sdatetime.timestamp()), int(Edatetime.timestamp()), Sdatetime.replace(tzinfo=pytz.UTC).timestamp(), Edatetime.replace(tzinfo=pytz.UTC).timestamp())
+    return (int(Sdatetime.timestamp()), int(Edatetime.timestamp()), Sdatetime.replace(tzinfo=pytz.UTC).timestamp(), Edatetime.replace(tzinfo=pytz.UTC).timestamp())'''
 
-### this function gets the start date for the data tables from the user when creating a new crypto in the Data base as all
+### This function gets the start date for the data tables from the user when creating a new crypto in the database
 def getStartTime():
-    ### get unix timestamp of now
+    ### Gets unix timestamp of now
     Ctime = int(time.mktime(datetime.now().timetuple()))
-    ### 189345600 is 6 years worth of seconds
+    ### 157680000 is 5 years worth of seconds, coinbase has a time limit of somewhere between 5 and 6 years on what data
+    ### can be fetched from api
     zerodate = Ctime - 157680000
     start = None
     config = readConfig()
     while True:
-        # Get Start Date
+        ### Get Start Date
         try:
             Sinput = input("Enter Start date as MM-DD-YYYY, press Enter to default to last date used:")
             if len(Sinput) < 1:
@@ -233,7 +238,8 @@ def getStartTime():
             print("Error: Invalid Date Entered")
             continue
 
-### goes with update15minCandles, fetches 350 candles of data from coinbase api
+### Fetches 350 candles of data from coinbase api (the max given by Coinbase for individual api calls)
+### So this is function is used within loops to make several calls
 def getCoinbaseMarketData(RestClient, crypto_market, Start, End, Timeunit, cursor, connection):
     def insertBatch():
         cursor.executemany(f'INSERT OR IGNORE INTO {table} (Unix, Low, High, Open, Close, Volume) VALUES(?, ?, ?, ?, ?, ?)', batch)
@@ -243,6 +249,7 @@ def getCoinbaseMarketData(RestClient, crypto_market, Start, End, Timeunit, curso
     table = f'{crypto_market.replace('-', '_')}_FIFTEEN_MINUTE_CANDLES'
     i = 0
     batch = []
+    ### For some reason data fetched places the oldest candle at the end instead of beginning of dict
     for item in reversed(MarketData['candles']):
         batch.append((item['start'], item['low'], item['high'], item['open'], item['close'], str(int(float(item['volume'])))))
         i += 1
@@ -250,44 +257,45 @@ def getCoinbaseMarketData(RestClient, crypto_market, Start, End, Timeunit, curso
             insertBatch()
             i = 0
     insertBatch()
+### The 15 min table is the only table that gets data directly from api, and this function handles that
 def update15minCandles(acronym, client, cursor, connection):
     end = None
     start = None
     global data, config
     table = from_dict(data[acronym]["tables"]["15min"])
-    ### The program fetches each 15 minute candle, the last candle is rarely a full 15 min
-    ### this deletes the last candle of prev run to fetch the complete candle this run
-    if data[acronym]['gotData']:
-        cursor.executescript(f'''
-                DELETE FROM {table.name} WHERE Id = (SELECT max(Id) FROM {table.name});
-                UPDATE sqlite_sequence SET seq = (SELECT max(Id) FROM {table.name}) WHERE name = "{table.name}";''')
-    else:
+    timeunit = 'FIFTEEN_MINUTE'
+    cryptoMarket = acronym + '-USD'
+    ### Checks whether this is the first time upating the asset table in question and then prompts the user for start
+    ### date to begin fetching data from if it is
+    if not data[acronym]['gotData']:
         temp = getStartTime()
         print('Getting data.....this may take a few minutes depending on start date set')
         start = str(temp[0])
         end = str(int(start) + 315000)
         config['lastStartDate'] = temp[1]
         writeConfig()
-    print(f"Updating.... {table.name}")
-    timeunit = 'FIFTEEN_MINUTE'
-    cryptoMarket = acronym + '-USD'
-
-    ### api only allows 350 candles to be fetched at one time also deletes previous created tables for bad acronym
-    while True:
-        if data[acronym]['gotData']:
-            break
+        print(f"Updating.... {table.name}")
+        ### Makes one query first to make sure iputs work with api before making permanent changes to database.
+        ### For example, this program cannot make sure a three letter acroynym is a valid crypto without making an
+        ### API call
         try:
             getCoinbaseMarketData(client, cryptoMarket, start, end, timeunit, cursor, connection)
             data[acronym]['gotData'] = True
             data[acronym]['prevStart'] = start
             writeData()
-            break
         except Exception as a:
             print(f"An error occurred: {a}")
             connection.rollback()
             quit()
 
-    prevStart = int(data[acronym]['prevStart'])
+    else:
+        ### The function fetches every 15 minute candle, the last candle is rarely a full 15 min
+        ### this deletes the last candle of previuous run to fetch the complete candle this run
+        cursor.executescript(f'''
+                       DELETE FROM {table.name} WHERE Id = (SELECT max(Id) FROM {table.name});
+                       UPDATE sqlite_sequence SET seq = (SELECT max(Id) FROM {table.name}) WHERE name = "{table.name}";''')
+        print(f"Updating.... {table.name}")
+
     Ctime = int(time.mktime(datetime.now().timetuple()))
     ### coinbase get_candles requires unix time integers in the form of strings
     while True:
@@ -295,7 +303,7 @@ def update15minCandles(acronym, client, cursor, connection):
             cursor.execute(f'SELECT Unix FROM {table.name} WHERE Id = (SELECT max(Id) FROM {table.name})')
             row = cursor.fetchone()[0]
             start = str(int(row) + 1)
-            #31500 = the ammount of seconds in 350 15 min candles
+            #315000 = the ammount of seconds in 350 15 min candles
             end = str(int(start) + 315000)
             if int(end) > Ctime:
                 end = str(Ctime)
@@ -305,7 +313,6 @@ def update15minCandles(acronym, client, cursor, connection):
                 break
             getCoinbaseMarketData(client, cryptoMarket, start, end, timeunit, cursor, connection)
             data[acronym]['prevStart'] = start
-            prevStart = start
             continue
         except KeyboardInterrupt:
             print('Program interrupted by user...')
@@ -315,7 +322,7 @@ def update15minCandles(acronym, client, cursor, connection):
             connection.rollback()
     writeData()
 
-### turns MarketDataTable Object Into Dict before storing in json file in specific format so that it may be converted back
+### Turns MarketDataTable Object into dict in order to store within json file
 def to_dict(self):
     return {
         "acronym" : self.acronym,
@@ -332,7 +339,7 @@ def from_dict(self):
         name = self["name"]
     )
 
-
+### Creates default tables that users should want for common trading strategies and analysis
 def createDefaultCandleTables(acronym, cursor):
     tables = ["15min", "30min", "1hour", "6hour", "12hour", "1day", "7day", "14day", "30day", "60day", "90day"]
     newTables = dict()
@@ -359,7 +366,7 @@ def createDefaultCandleTables(acronym, cursor):
 
 
 
-### update all other tables besides 15 minutes, as all other tables are derived from the 15 min table
+### Updates all other tables with data first obtained in the 15min table without making additional API calls
 def updateOtherTable(acronym, sourceTable, table, cursor, connection, iRowLimit=2):
     def maxRow(anyTable):
         cursor.execute(f'SELECT * FROM {anyTable} WHERE Id = (SELECT max(Id) FROM {anyTable})')
@@ -378,12 +385,12 @@ def updateOtherTable(acronym, sourceTable, table, cursor, connection, iRowLimit=
         connection.commit()
         batch.clear()
     print(f"Updating.... {table}")
-    #save cursorrent starting row in case user wants to cancel
+    ### Delets last row that was likely based on incomplete data of the last row of the 15mintable
     cursor.executescript(f'''
             DELETE FROM {table} WHERE Id = (SELECT max(Id) FROM {table});
             UPDATE sqlite_sequence SET seq = (SELECT max(Id) FROM {table}) WHERE name = "{table}"
         ''')
-    ### ensures program picks up where it left off, even in case of unintended interruption
+    ### Ensures program picks up where it left off, even in case of unintended interruption
     startRow = maxRow(table)
 
     if startRow == 0:
@@ -394,13 +401,14 @@ def updateOtherTable(acronym, sourceTable, table, cursor, connection, iRowLimit=
     batch = []
     n = 0
     try:
-        ### the loop is for condensing candles into a single candle of longer time period
+        ### This loop is for condensing candles into a single candle of longer time period
         while True:
             i += 1
-            n+=1
+            n += 1
             if i > lastRow:
                 break
-            ### Unix and Open Values are always taken from 1st row in iteration, the rest will be updated
+            ### Unix and Open Values are always taken from 1st row in iteration, the rest will be updated as the current
+            ### loop iteration progresses
             row = getRow(i)
             Unix = row[1]
             Low = row[2]
@@ -413,10 +421,10 @@ def updateOtherTable(acronym, sourceTable, table, cursor, connection, iRowLimit=
             ### e.g. 15 min candle source table into 30 min source table, iRowLimit = 2
             while r < iRowLimit:
                 if i == lastRow:
-                    batch.append((Unix, Low, High, Open,- Close, Volume))
+                    batch.append((Unix, Low, High, Open, Close, Volume))
                     break
                 i += 1
-                n+=1
+                n += 1
                 row = getRow(i)
                 Low2 = row[2]
                 High2 = row[3]
@@ -437,4 +445,6 @@ def updateOtherTable(acronym, sourceTable, table, cursor, connection, iRowLimit=
         print('Program interrupted by user....')
         cursor.execute(f"DELETE FROM TABLE {table} WHERE Id >= {startRow + 1}")
         connection.commit()
+
+
 
