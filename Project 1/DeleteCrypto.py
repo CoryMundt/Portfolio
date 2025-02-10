@@ -1,3 +1,4 @@
+import sqlite3
 from PGfunctions import readData, from_dict, writeData
 ### This file is to delete all tables associated with a specified asset instead of manually deleting each one
 while True:
