@@ -275,9 +275,7 @@ def update15minCandles(acronym, client, cursor, connection):
         config['lastStartDate'] = temp[1]
         writeConfig()
         print(f"Updating.... {table.name}")
-        ### Makes one query first to make sure inputs work with api before making permanent changes to database.
-        ### For example, this program cannot make sure a three letter acroynym is a valid crypto without making an
-        ### API call
+        ### Makes one query again to make sure new inputs work with api before making permanent changes to database.
         try:
             getCoinbaseMarketData(client, cryptoMarket, start, end, timeunit, cursor, connection)
             data[acronym]['gotData'] = True
