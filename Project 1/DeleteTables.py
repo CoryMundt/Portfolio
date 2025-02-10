@@ -1,8 +1,8 @@
 import sqlite3
 from PGfunctions import readData, from_dict, writeData
 
-
-#this file is for users to delete individual tables they do not want except for those with demoniations of 1
+### This file is for users to delete individual tables they do not want except for 15min, 1 hour, and 1 day
+### as those 3 tables are required for the program to work
 while True:
     run = input("Would you like to delete a table Y/N: ")
     if run.upper() not in ('Y', 'N'):
@@ -51,6 +51,7 @@ def deleteTables():
 
     key = str(denom) + timeunit
 
+    ### Checks to see if the table exists in order to delete it, if it does, it deltes it, if not, nothing happens
     def checkDelete():
         global data
         try:
@@ -58,8 +59,9 @@ def deleteTables():
             cur.execute(f'DROP TABLE IF EXISTS {table.name}')
             del data[acronym]['tables'][key]
             conn.commit()
+            return 0
         except:
-            pass
+            return -1
 
     firstLoop = True
 
@@ -70,7 +72,8 @@ def deleteTables():
                 acronym = acronym.upper()
                 if len(acronym) < 1:
                     break
-            checkDelete()
+            if checkDelete() != 0:
+                break
             print("Table Deleted")
             firstLoop = False
     else:
