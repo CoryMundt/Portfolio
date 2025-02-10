@@ -79,8 +79,8 @@ def createTables():
             print("Error: Please enter a whole number")
             continue
     key = str(denom) + timeunit
-    ### Checks whether a table already exists by searching for it within the json files, if an error is given
-    ### returns 0 or -1 whether or not table exists in order to break out of the while loop and not prompt the user
+    ### Checks whether a table already exists by searching for it within the json files
+    ### Returns 0 or -1 depending on whether or not table exists in order to break out of the while loop and to also not prompt the user
     ### if they want the same table created for other crypto if the custom table does not have valid inputs
     def checkCreate():
         try:
