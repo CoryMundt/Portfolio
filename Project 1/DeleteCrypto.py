@@ -13,6 +13,10 @@ while True:
 conn = sqlite3.connect('MarketData.sqlite')
 cur = conn.cursor()
 data = readData()
+### Prompts user for crypto acronym to delete and then checks if the acronym is stored in the database by searching
+### for it within the json file that keeps track of all cryptos and tables associated within them and then
+### loops through drop table SQL queries to ddelete all tables associated with that crypto before deleting the
+### crytpo from dictionary itself.
 def deleteCrypto():
     while True:
         ### Ensures user inputs an asset that exists within the database
