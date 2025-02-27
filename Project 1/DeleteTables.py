@@ -15,6 +15,10 @@ while True:
 conn = sqlite3.connect('MarketData.sqlite')
 cur = conn.cursor()
 data = readData()
+
+### Prompts user for crypto they want to delete a specific table from or has them press enter
+### to delete from all cyrptos. It then walks them through a series of prompts to get the specific
+### table they want to delete
 def deleteTables():
     global data
     while True:
@@ -51,7 +55,8 @@ def deleteTables():
 
     key = str(denom) + timeunit
 
-    ### Checks to see if the table exists in order to delete it, if it does, it deltes it, if not, nothing happens
+    ### Checks to see if the table exists json file in order to delete it, if it does, it deltes it, 
+    ### if not, nothing happens
     def checkDelete():
         global data
         try:
