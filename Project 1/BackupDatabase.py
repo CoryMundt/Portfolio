@@ -1,7 +1,7 @@
 import shutil
 from PGfunctions import readConfig, writeConfig
 ### Counts how many times the program has run and on  first run asks how many runs user wants before updating backup
-### database
+### database. When creating a backup it copies the file MarketData.sqlite to MarketDataBackup.sqlite
 config = readConfig()
 while True:
     if config['runs'] == -1:
