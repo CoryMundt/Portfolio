@@ -1,4 +1,5 @@
 ### In the event something unexpected goes wrong, this file allows the user to restore from the backup
+### by copying MarketDataBackup.sqlite file to MarketData.sqlite
 import shutil
 while True:
     answer = input("Would you like to restore from Backup? Y/N: ")
